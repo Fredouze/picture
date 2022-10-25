@@ -1,0 +1,60 @@
+
+
+
+
+    
+<?php
+
+
+
+
+// fonction pour importer une image
+function FonctionPicture($lieux, $numero_image, $key)
+{
+
+
+    $nbr = 0;
+    $re = $lieux;
+    $tagliste = array();
+    $largeImageURL = '0';
+    $webformatURL = '0';
+    $tag = '';
+    $people_json = file_get_contents("https://pixabay.com/api/?key={$key}={$re}+france&lang=fr&image_type=photo");
+
+    $decoded_json = json_decode($people_json, true);
+
+    $customers = $decoded_json['hits'];
+    $premiereimage = '';
+    $premieretag = '';
+    foreach ($customers as $customer) {
+        $nbr++;
+        // recuperation de la premiere image 
+        $premiereimage =  $customer['webformatURL'];
+        // recuperation du premier tag.
+        $premieretag =  $customer['tags'];
+        $pieces = explode(",", $premieretag);
+        $tagliste = $pieces;
+        $premieretag = $pieces[0];
+
+        // condition pour prendre la primiere image 
+        if ($nbr ==  $numero_image) {
+
+            $chaine = $customer['tags'];
+            $chaine = str_replace(", ", ",", $chaine);
+
+            $pieces = explode(",", $chaine);
+            $tagliste = $pieces;
+            $tag = $pieces[0];
+            $largeImageURL = $customer['largeImageURL'];
+            $webformatURL = $customer['webformatURL'];
+        }
+    }
+
+    return array('largeImageURL' => $largeImageURL, 'webformatURL' => $webformatURL, 'tag' => $tag, 'tagliste' => $tagliste, 'premiereimage' => $premiereimage, 'premieretag' => $premieretag);
+}
+
+
+
+
+
+?>
